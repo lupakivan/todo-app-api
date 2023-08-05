@@ -7,10 +7,12 @@ import {
   Param,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
 import {
   CreateDto,
   DeleteParamsDto,
+  FindAllQueryDto,
   FindOneParamsDto,
   UpdateDto,
   UpdateParamsDto,
@@ -28,8 +30,8 @@ export class TodoController {
   }
 
   @Get()
-  findAll(): Todo[] {
-    return this.todoService.findAll();
+  findAll(@Query() { search, limit }: FindAllQueryDto): Todo[] {
+    return this.todoService.findAll({ search, limit });
   }
 
   @Get(':id')
@@ -46,5 +48,11 @@ export class TodoController {
   @HttpCode(204)
   delete(@Param() { id }: DeleteParamsDto): void {
     return this.todoService.delete(id);
+  }
+
+  @Delete()
+  @HttpCode(204)
+  deleteAll(): void {
+    return this.todoService.deleteAll();
   }
 }

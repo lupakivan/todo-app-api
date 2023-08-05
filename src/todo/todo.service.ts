@@ -1,7 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { getOrThrow } from '../utils';
-import { CreateTodoPayload, Todo, UpdateTodoPayload } from './types';
-import { TodoId } from './types/todo-id.type';
+import {
+  CreateTodoPayload,
+  FindAllParams,
+  Todo,
+  TodoId,
+  UpdateTodoPayload,
+} from './types';
 
 @Injectable()
 export class TodoService {
@@ -10,10 +15,11 @@ export class TodoService {
   create(payload: CreateTodoPayload): Todo {
     const todo = {
       id: Date.now().toString(),
+      isDone: false,
       ...payload,
     };
 
-    this.todos.push({ id: Date.now().toString(), ...todo });
+    this.todos.push(todo);
 
     return todo;
   }
@@ -25,8 +31,20 @@ export class TodoService {
     );
   }
 
-  findAll() {
-    return this.todos;
+  findAll(params: FindAllParams): Todo[] {
+    const filtered = this.todos.filter((todo: Todo) => {
+      if (params.search) {
+        return todo.title.includes(params.search);
+      }
+
+      return true;
+    });
+
+    if (params.limit) {
+      return filtered.slice(0, params.limit);
+    }
+
+    return filtered;
   }
 
   update(id: TodoId, payload: UpdateTodoPayload): Todo {
@@ -44,5 +62,9 @@ export class TodoService {
     getOrThrow(this.findOne(id), new NotFoundException());
 
     this.todos = this.todos.filter((todo) => todo.id !== id);
+  }
+
+  deleteAll(): void {
+    this.todos = [];
   }
 }
