@@ -7,7 +7,7 @@ import { TodoId } from './types/todo-id.type';
 export class TodoService {
   private todos: Todo[] = [];
 
-  createTodo(payload: CreateTodoPayload): Todo {
+  create(payload: CreateTodoPayload): Todo {
     const todo = {
       id: Date.now().toString(),
       ...payload,
@@ -18,30 +18,30 @@ export class TodoService {
     return todo;
   }
 
-  getTodo(id: TodoId): Todo {
+  findOne(id: TodoId): Todo {
     return getOrThrow(
       this.todos.find((todo) => todo.id === id),
       new NotFoundException(),
     );
   }
 
-  getAllTodos() {
+  findAll() {
     return this.todos;
   }
 
-  updateTodo(id: TodoId, payload: UpdateTodoPayload): Todo {
-    const todo = getOrThrow(this.getTodo(id), new NotFoundException());
+  update(id: TodoId, payload: UpdateTodoPayload): Todo {
+    const todo = getOrThrow(this.findOne(id), new NotFoundException());
 
     const updatedTodo: Todo = { ...todo, ...payload };
     const todos: Todo[] = this.todos.filter((todo) => todo.id !== id);
 
-    this.todos = [...todos, { ...this.getTodo(id), ...payload }];
+    this.todos = [...todos, { ...this.findOne(id), ...payload }];
 
     return updatedTodo;
   }
 
-  deleteTodo(id: TodoId): void {
-    getOrThrow(this.getTodo(id), new NotFoundException());
+  delete(id: TodoId): void {
+    getOrThrow(this.findOne(id), new NotFoundException());
 
     this.todos = this.todos.filter((todo) => todo.id !== id);
   }

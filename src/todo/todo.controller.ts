@@ -24,27 +24,27 @@ export class TodoController {
 
   @Post()
   create(@Body() createTodoDto: CreateDto): Todo {
-    return this.todoService.createTodo(createTodoDto);
+    return this.todoService.create(createTodoDto);
   }
 
   @Get()
   findAll(): Todo[] {
-    return this.todoService.getAllTodos();
+    return this.todoService.findAll();
   }
 
   @Get(':id')
   findOne(@Param() { id }: FindOneParamsDto): Todo {
-    return this.todoService.getTodo(id);
+    return this.todoService.findOne(id);
   }
 
   @Put(':id')
   update(@Param() { id }: UpdateParamsDto, @Body() data: UpdateDto): Todo {
-    return this.todoService.updateTodo(id, data);
+    return this.todoService.update(id, data);
   }
 
   @Delete(':id')
   @HttpCode(204)
   delete(@Param() { id }: DeleteParamsDto): void {
-    return this.todoService.deleteTodo(id);
+    return this.todoService.delete(id);
   }
 }
