@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsInt, IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsInt, IsOptional, IsString } from 'class-validator';
 
 export class FindAllQueryDto {
   @IsInt()
@@ -10,4 +10,8 @@ export class FindAllQueryDto {
   @IsString()
   @IsOptional()
   search: string;
+
+  @IsOptional()
+  @IsBoolean()
+  isDone: boolean;
 }

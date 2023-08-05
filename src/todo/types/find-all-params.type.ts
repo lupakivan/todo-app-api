@@ -1,4 +1,4 @@
-export type FindAllParams = {
+export type TFindAllParams = {
   limit?: number;
   search?: string;
 };

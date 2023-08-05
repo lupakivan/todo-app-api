@@ -1,3 +1,3 @@
-import { Todo } from './todo.type';
+import { TTodo } from './todo.type';
 
-export type UpdateTodoPayload = Omit<Todo, 'id'>;
+export type TUpdateTodoPayload = Omit<TTodo, 'id'>;

@@ -1,7 +1,7 @@
 import { IsDefined, IsString } from 'class-validator';
-import { CreateTodoPayload } from '../types';
+import { TCreateTodoPayload } from '../types';
 
-export class CreateDto implements CreateTodoPayload {
+export class CreateDto implements TCreateTodoPayload {
   @IsString()
   @IsDefined()
   title: string;

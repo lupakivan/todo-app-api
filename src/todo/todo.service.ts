@@ -1,70 +1,65 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { FilterQuery, Model } from 'mongoose';
 import { getOrThrow } from '../utils';
+import { Todo } from './schemas';
 import {
-  CreateTodoPayload,
-  FindAllParams,
-  Todo,
-  TodoId,
-  UpdateTodoPayload,
+  TCreateTodoPayload,
+  TFindAllParams,
+  TTodo,
+  TTodoId,
+  TUpdateTodoPayload,
 } from './types';
 
 @Injectable()
 export class TodoService {
-  private todos: Todo[] = [];
+  constructor(@InjectModel(Todo.name) private todoModel: Model<Todo>) {}
 
-  create(payload: CreateTodoPayload): Todo {
-    const todo = {
-      id: Date.now().toString(),
+  async create(payload: TCreateTodoPayload): Promise<TTodo> {
+    const todo = new this.todoModel({
       isDone: false,
       ...payload,
-    };
-
-    this.todos.push(todo);
-
-    return todo;
-  }
-
-  findOne(id: TodoId): Todo {
-    return getOrThrow(
-      this.todos.find((todo) => todo.id === id),
-      new NotFoundException(),
-    );
-  }
-
-  findAll(params: FindAllParams): Todo[] {
-    const filtered = this.todos.filter((todo: Todo) => {
-      if (params.search) {
-        return todo.title.includes(params.search);
-      }
-
-      return true;
     });
 
-    if (params.limit) {
-      return filtered.slice(0, params.limit);
+    const result = await todo.save();
+
+    return result.toObject();
+  }
+
+  findAll({ search, limit }: TFindAllParams): Promise<TTodo[]> {
+    const filters: FilterQuery<TTodo> = {};
+
+    if (search) {
+      filters.title = { $regex: search, $options: 'i' };
     }
 
-    return filtered;
+    return this.todoModel.find(filters).limit(limit).exec();
   }
 
-  update(id: TodoId, payload: UpdateTodoPayload): Todo {
-    const todo = getOrThrow(this.findOne(id), new NotFoundException());
+  async findOne(id: TTodoId): Promise<TTodo> {
+    const todo = getOrThrow(
+      await this.todoModel.findOne({ _id: id }).exec(),
+      new NotFoundException(),
+    );
 
-    const updatedTodo: Todo = { ...todo, ...payload };
-    const todos: Todo[] = this.todos.filter((todo) => todo.id !== id);
-
-    this.todos = [...todos, { ...this.findOne(id), ...payload }];
-
-    return updatedTodo;
+    return todo.toObject();
   }
 
-  delete(id: TodoId): void {
-    getOrThrow(this.findOne(id), new NotFoundException());
+  async update(id: TTodoId, payload: TUpdateTodoPayload): Promise<TTodo> {
+    const todo = getOrThrow(await this.findOne(id), new NotFoundException());
 
-    this.todos = this.todos.filter((todo) => todo.id !== id);
+    await this.todoModel.updateOne({ _id: id }, { ...todo, ...payload }).exec();
+
+    return this.findOne(id);
   }
 
-  deleteAll(): void {
-    this.todos = [];
+  async delete(id: TTodoId): Promise<void> {
+    getOrThrow(await this.findOne(id), new NotFoundException());
+
+    await this.todoModel.deleteOne({ _id: id }).exec();
+  }
+
+  async deleteAll(): Promise<void> {
+    await this.todoModel.deleteMany({}).exec();
   }
 }

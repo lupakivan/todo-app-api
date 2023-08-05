@@ -1,1 +1,1 @@
-export type TodoId = string;
+export type TTodoId = string;

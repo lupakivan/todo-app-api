@@ -1,7 +1,7 @@
-import { TodoId } from './todo-id.type';
+import { TTodoId } from './todo-id.type';
 
-export type Todo = {
-  id: TodoId;
+export type TTodo = {
+  id: TTodoId;
   title: string;
   isDone: boolean;
 };

@@ -1,3 +1,3 @@
-import { Todo } from './todo.type';
+import { TTodo } from './todo.type';
 
-export type CreateTodoPayload = Omit<Todo, 'id' | 'isDone'>;
+export type TCreateTodoPayload = Omit<TTodo, 'id' | 'isDone'>;

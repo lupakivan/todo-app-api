@@ -1,7 +1,7 @@
 import { IsBoolean, IsDefined, IsString } from 'class-validator';
-import { UpdateTodoPayload } from '../types';
+import { TUpdateTodoPayload } from '../types';
 
-export class UpdateDto implements UpdateTodoPayload {
+export class UpdateDto implements TUpdateTodoPayload {
   @IsString()
   @IsDefined()
   title: string;

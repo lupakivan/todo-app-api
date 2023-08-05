@@ -9,6 +9,7 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
+import { plainToInstance } from 'class-transformer';
 import {
   CreateDto,
   DeleteParamsDto,
@@ -17,42 +18,54 @@ import {
   UpdateDto,
   UpdateParamsDto,
 } from './dto';
+import { TodoDto } from './dto/todo.dto';
 import { TodoService } from './todo.service';
-import { Todo } from './types';
+import { TTodo } from './types';
 
 @Controller('todo')
 export class TodoController {
   constructor(private readonly todoService: TodoService) {}
 
   @Post()
-  create(@Body() createTodoDto: CreateDto): Todo {
-    return this.todoService.create(createTodoDto);
+  async create(@Body() createTodoDto: CreateDto): Promise<TTodo> {
+    const todo = await this.todoService.create(createTodoDto);
+
+    return plainToInstance(TodoDto, todo, { excludeExtraneousValues: true });
   }
 
   @Get()
-  findAll(@Query() { search, limit }: FindAllQueryDto): Todo[] {
-    return this.todoService.findAll({ search, limit });
+  async findAll(@Query() { search, limit }: FindAllQueryDto): Promise<TTodo[]> {
+    const todos = await this.todoService.findAll({ search, limit });
+
+    return plainToInstance(TodoDto, todos, { excludeExtraneousValues: true });
   }
 
   @Get(':id')
-  findOne(@Param() { id }: FindOneParamsDto): Todo {
-    return this.todoService.findOne(id);
+  async findOne(@Param() { id }: FindOneParamsDto): Promise<TTodo> {
+    const todo = await this.todoService.findOne(id);
+
+    return plainToInstance(TodoDto, todo, { excludeExtraneousValues: true });
   }
 
   @Put(':id')
-  update(@Param() { id }: UpdateParamsDto, @Body() data: UpdateDto): Todo {
-    return this.todoService.update(id, data);
+  async update(
+    @Param() { id }: UpdateParamsDto,
+    @Body() data: UpdateDto,
+  ): Promise<TTodo> {
+    const todo = await this.todoService.update(id, data);
+
+    return plainToInstance(TodoDto, todo, { excludeExtraneousValues: true });
   }
 
   @Delete(':id')
   @HttpCode(204)
-  delete(@Param() { id }: DeleteParamsDto): void {
+  delete(@Param() { id }: DeleteParamsDto): Promise<void> {
     return this.todoService.delete(id);
   }
 
   @Delete()
   @HttpCode(204)
-  deleteAll(): void {
+  deleteAll(): Promise<void> {
     return this.todoService.deleteAll();
   }
 }
