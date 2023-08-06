@@ -5,8 +5,8 @@ import {
   Get,
   HttpCode,
   Param,
+  Patch,
   Post,
-  Put,
   Query,
 } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
@@ -47,7 +47,7 @@ export class TodoController {
     return plainToInstance(TodoDto, todo, { excludeExtraneousValues: true });
   }
 
-  @Put(':id')
+  @Patch(':id')
   async update(
     @Param() { id }: UpdateParamsDto,
     @Body() data: UpdateDto,
