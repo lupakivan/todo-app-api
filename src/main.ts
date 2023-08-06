@@ -7,6 +7,8 @@ import { AppModule } from './app.module';
   const port = process.env.APP_PORT || 3000;
   const logger = new Logger();
 
+  console.log(process.env.MONGO_URI);
+
   const app = await NestFactory.create(AppModule);
 
   app.enableCors();
