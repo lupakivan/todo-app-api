@@ -4,7 +4,7 @@ import * as process from 'process';
 import { AppModule } from './app.module';
 
 (async function bootstrap() {
-  const { APP_PORT } = process.env;
+  const port = process.env.APP_PORT || 3000;
   const logger = new Logger();
 
   const app = await NestFactory.create(AppModule);
@@ -15,7 +15,5 @@ import { AppModule } from './app.module';
     new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
   );
 
-  await app
-    .listen(APP_PORT)
-    .then(() => logger.log(`Listening on port ${APP_PORT}`));
+  await app.listen(port).then(() => logger.log(`Listening on port ${port}`));
 })();
